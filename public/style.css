@@ -1,0 +1,173 @@
+/* public/styles.css */
+
+/* --- 1. RESET DAN FONT DASAR --- */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7f6; /* Warna latar belakang yang lembut */
+    display: flex;
+    justify-content: center; /* Pusatkan konten horizontal */
+    padding: 30px 0;
+    margin: 0;
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px; /* Batasi lebar container utama */
+    padding: 0 20px;
+}
+
+/* --- 2. CARD STYLING --- */
+.card {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Bayangan lembut */
+    margin-bottom: 25px;
+    text-align: center; /* Pusatkan elemen di dalam card */
+}
+
+.card h2 {
+    color: #333;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #5cb85c; /* Garis bawah hijau */
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+/* --- 3. FORM ELEMENTS --- */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Jarak antara elemen form */
+    margin-bottom: 20px;
+    text-align: left; /* Teks label kembali ke kiri */
+}
+
+label {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: -10px; /* Merapatkan dengan input */
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+input:focus {
+    border-color: #5cb85c;
+    outline: none;
+}
+
+/* Untuk input API Key yang readonly */
+#api-key-output {
+    background-color: #eee;
+    font-family: monospace;
+    font-size: 14px;
+    cursor: text;
+    margin-bottom: 10px;
+}
+
+
+/* --- 4. BUTTONS --- */
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+.btn-primary {
+    background-color: #007bff; /* Biru */
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-success {
+    background-color: #5cb85c; /* Hijau (seperti di screenshot) */
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #4cae4c;
+}
+
+.btn-secondary {
+    background-color: #6c757d; /* Abu-abu gelap */
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.btn-danger {
+    background-color: #dc3545; /* Merah untuk Logout */
+    color: white;
+    float: right; /* Untuk tombol logout di dashboard */
+    margin-top: 0;
+}
+
+/* --- 5. TABLE STYLING (Dashboard) --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    text-align: left;
+}
+
+table th, table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+table th {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: bold;
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table tr:hover {
+    background-color: #e9ecef;
+}
+
+/* Teks dan link lainnya */
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 20px 0;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}

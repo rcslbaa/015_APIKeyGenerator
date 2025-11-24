@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/style.css"> 
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <header>
+                <h2>Admin Dashboard</h2>
+                <button onclick="logout()" class="btn-danger">Logout</button>
+            </header>
+            
+            <p id="auth-status" style="color: red; margin-top: 10px;"></p>
+
+            <h3>User List</h3>
+            <table id="user-list-table" border="1">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Email</th>
+                        <th>Key Status</th>
+                        <th>User Since</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+
+            <h3>API Key List (Detail)</h3>
+            <table id="key-list-table" border="1">
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>API Key (Hashed)</th>
+                        <th>Status</th>
+                        <th>Expiry Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('adminToken');
+        const authStatusEl = document.getElementById('auth-status');
+
+        // Cek Token saat halaman dimuat
+        if (!token) {
+            authStatusEl.textContent = 'Akses ditolak. Silakan login.';
+            // Menggunakan timeout agar pesan sempat terlihat sebelum redirect
+            setTimeout(() => {
+                window.location.href = 'admin_login.html';
+            }, 1500);
+        } else {
+            fetchDashboardData();
+        }
+
+        async function fetchDashboardData() {
+            const userTableBody = document.querySelector('#user-list-table tbody');
+            const keyTableBody = document.querySelector('#key-list-table tbody');
+            
+            // Tampilkan loading
+            userTableBody.innerHTML = '<tr><td colspan="5">Memuat Data...</td></tr>';
+            keyTableBody.innerHTML = '<tr><td colspan="4">Memuat Data...</td></tr>';
+
+            const response = await fetch('/api/admin/dashboard', {
+                headers: { 
+                    // Mengirimkan Token JWT untuk otorisasi (Middleware Node.js akan memverifikasinya)
+                    'Authorization': `Bearer ${token}` 
+                }
+            });
+
+            if (response.status === 401 || response.status === 403) {
+                authStatusEl.textContent = 'Sesi kadaluarsa. Silakan login kembali.';
+                localStorage.removeItem('adminToken');
+                setTimeout(() => { window.location.href = 'admin_login.html'; }, 1500);
+                return;
+            }
+
+            const result = await response.json();
+            
+            userTableBody.innerHTML = ''; 
+            keyTableBody.innerHTML = ''; 
+
+            if (result.success) {
+                // Mengisi Tabel User List
+                result.data.forEach(item => {
+                    let row = userTableBody.insertRow();
+                    row.insertCell().textContent = item.user_id;
+                    row.insertCell().textContent = item.first_name;
+                    row.insertCell().textContent = item.email;
+                    row.insertCell().textContent = item.status;
+                    row.insertCell().textContent = new Date(item.user_since).toLocaleDateString();
+                });
+
+                // Mengisi Tabel API Key List
+                result.data.forEach(item => {
+                    let row = keyTableBody.insertRow();
+                    row.insertCell().textContent = item.user_id;
+                    // Tampilkan hanya 20 karakter pertama key agar tidak terlalu panjang
+                    row.insertCell().textContent = item.api_key_value.substring(0, 20) + '...';
+                    row.insertCell().textContent = item.status;
+                    row.insertCell().textContent = item.expiry_date ? item.expiry_date : 'N/A';
+                });
+
+            } else {
+                authStatusEl.textContent = result.message || 'Gagal mengambil data dashboard.';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            window.location.href = 'admin_login.html';
+        }
+    </script>
+</body>
+</html>

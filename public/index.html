@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Key Generator & User</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h2>API Key Generator & User</h2>
+            
+            <p id="status-message" style="color: blue;"></p>
+
+            <form id="generate-form">
+                <button type="button" id="generate-btn" class="btn-primary">Generate Key</button>
+            </form>
+
+            <input type="text" id="api-key-output" value="" readonly placeholder="Tekan 'Generate Key'">
+            <button onclick="copyKey()" class="btn-secondary">Copy to Clipboard</button>
+            
+            <hr>
+
+            <form id="save-form">
+                <label for="first_name">First Name</label>
+                <input type="text" id="first_name" required>
+                
+                <label for="last_name">Last Name</label>
+                <input type="text" id="last_name">
+
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+                
+                <button type="submit" class="btn-success">Save User & Link Key</button>
+                <small id="save-note" style="display: block; margin-top: 10px;">API Key yang dihasilkan akan tersimpan di database.</small>
+            </form>
+
+            <a href="admin_login.html"><button class="btn-secondary">Admin Panel</button></a>
+        </div>
+    </div>
+
+    <script>
+        let currentApiKey = '';
+        const statusMessage = document.getElementById('status-message');
+        const apiKeyOutput = document.getElementById('api-key-output');
+
+        // Fungsi Client-Side untuk Generate Key Sederhana (Hanya Tampilan)
+        document.getElementById('generate-btn').addEventListener('click', () => {
+            // Dalam implementasi nyata, key ini idealnya di-generate di server untuk keamanan,
+            // tetapi kita menirunya di sini dan mengirimkannya ke server saat "Save".
+            currentApiKey = generateUniqueKey();
+            apiKeyOutput.value = currentApiKey;
+            statusMessage.style.color = 'blue';
+            statusMessage.textContent = 'API Key berhasil digenerate, sekarang simpan user.';
+        });
+
+        // Fungsi untuk membuat Key unik (Client-side simulation)
+        function generateUniqueKey() {
+            // Menggunakan fungsi standar untuk membuat string acak yang panjang
+            return (Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)).toUpperCase();
+        }
+
+        function copyKey() {
+            if (apiKeyOutput.value) {
+                apiKeyOutput.select();
+                apiKeyOutput.setSelectionRange(0, 99999);
+                document.execCommand("copy");
+                alert("API Key disalin: " + apiKeyOutput.value);
+            } else {
+                alert("Generate Key terlebih dahulu!");
+            }
+        }
+
+        // Fungsi untuk Menyimpan User dan Key (Memanggil API Node.js)
+        document.getElementById('save-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!currentApiKey) {
+                statusMessage.style.color = 'red';
+                statusMessage.textContent = 'Anda harus Generate Key terlebih dahulu!';
+                return;
+            }
+
+            const first_name = document.getElementById('first_name').value;
+            const last_name = document.getElementById('last_name').value;
+            const email = document.getElementById('email').value;
+
+            // Panggil API endpoint untuk menyimpan user dan key
+            const response = await fetch('/api/key/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ first_name, last_name, email })
+            });
+
+            const data = await response.json();
+            
+            if (data.success) {
+                statusMessage.style.color = 'green';
+                statusMessage.textContent = `SUCCESS! API Key untuk ${email} berhasil disimpan.`;
+                // Reset form dan key setelah sukses
+                document.getElementById('save-form').reset();
+                currentApiKey = '';
+                apiKeyOutput.value = '';
+            } else {
+                statusMessage.style.color = 'red';
+                statusMessage.textContent = data.message || 'Gagal menyimpan data.';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Register</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h2>Admin Register</h2>
+            <p>Buat akun admin baru</p>
+            <p id="message" style="color: red;"></p>
+            
+            <form id="register-form">
+                <label for="email">Admin Email</label>
+                <input type="email" id="email" required>
+                
+                <label for="password">Admin Password</label>
+                <input type="password" id="password" required>
+                
+                <button type="submit" class="btn-primary">Buat Admin</button>
+            </form>
+            
+            <p>Sudah punya akun? <a href="admin_login.html">Login di sini</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageEl = document.getElementById('message');
+            
+            // Panggil API endpoint untuk registrasi
+            const response = await fetch('/api/admin/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                messageEl.style.color = 'green';
+                messageEl.textContent = 'Registrasi Berhasil! Silakan Login.';
+                // Kosongkan form setelah sukses
+                document.getElementById('register-form').reset(); 
+            } else if (response.status === 409) {
+                // Konflik (Email sudah ada)
+                messageEl.style.color = 'red';
+                messageEl.textContent = 'Email sudah terdaftar. Silakan login.';
+            } else {
+                messageEl.style.color = 'red';
+                messageEl.textContent = data.message || 'Registrasi gagal karena error server.';
+            }
+        });
+    </script>
+</body>
+</html>
